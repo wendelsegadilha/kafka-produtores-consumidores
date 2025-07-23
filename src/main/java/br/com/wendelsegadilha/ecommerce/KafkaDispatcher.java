@@ -7,28 +7,27 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-public class KafkaDispatcher implements Closeable {
+public class KafkaDispatcher<T> implements Closeable {
 
-    private final KafkaProducer<String, String> producer;
+    private final KafkaProducer<String, T> producer;
 
     public KafkaDispatcher() {
-        this.producer = new KafkaProducer<String, String>(properties());
+        this.producer = new KafkaProducer<>(properties());
     }
 
     private Properties properties() {
         var properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.30.236.87:9092"); //usar ip do wsl (ip addr | grep inet)
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
         return properties;
     }
 
-    public void send(String topic, String key, String value) throws ExecutionException, InterruptedException {
-        var record = new ProducerRecord<String, String>(topic, value, value);
+    public void send(String topic, String key, T value) throws ExecutionException, InterruptedException {
+        var record = new ProducerRecord<>(topic, key, value);
         Callback callback = (data, exception) -> {
             if (exception != null) {
                 exception.printStackTrace();
