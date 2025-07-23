@@ -1,5 +1,6 @@
 package br.com.wendelsegadilha.ecommerce;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -16,13 +17,17 @@ public class NewOrder {
         var value = "123,456,600";
         var topic = "ECOMMERCE_NEW_ORDER";
         var record = new ProducerRecord<String, String>(topic, value, value);
-        producer.send(record, (data, exception) -> {
+        Callback callback = (data, exception) -> {
             if (exception != null) {
                 exception.printStackTrace();
                 return;
             }
             System.out.println(data.topic() + ":::partition " + data.partition() + "/ offset " + data.offset() + "/ timestamp " + data.timestamp());
-        }).get();
+        };
+        producer.send(record, callback).get();
+        var email = "Teste de e-mail";
+        var emailRecord = new ProducerRecord<String, String>("ECOMMERCE_SEND_EMAIL", email, email);
+        producer.send(emailRecord, callback).get();
 
     }
 
