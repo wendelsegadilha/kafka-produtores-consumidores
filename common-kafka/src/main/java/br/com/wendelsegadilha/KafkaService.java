@@ -59,11 +59,8 @@ public class KafkaService<T> implements Closeable {
                 records.forEach(record -> {
                     try {
                         parse.consumer(record);
-                    } catch (ExecutionException e) {
+                    } catch (Exception e) {
                         //somente logamos por enquanto
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        // somente logamos por enquanto
                         e.printStackTrace();
                     }
                 });
