@@ -16,7 +16,11 @@ public class CreateUserService {
         var createTable = "create table users (" +
                 "uuid varchar(200) primary key," +
                 "email varchar(200))";
-        connection.createStatement().execute(createTable);
+        try {
+            connection.createStatement().execute(createTable);
+        }catch (SQLException ex){
+            // tomar cuidado com isso
+        }
     }
 
     public static void main( String[] args ) throws ExecutionException, InterruptedException, SQLException {
@@ -37,14 +41,14 @@ public class CreateUserService {
         System.out.println("Oder: " + order);
         // salvar no banco
         if(isNewUser(order.getEmail())) {
-            insertNewUser(order.getEmail());
+            insertNewUser(order.getUserId(),order.getEmail());
         }
 
     }
 
-    private void insertNewUser(String email) throws SQLException {
+    private void insertNewUser(String uuid, String email) throws SQLException {
         PreparedStatement insert = connection.prepareStatement("insert into users (uuid, email) values (?, ?)");
-        insert.setString(1, "uuid");
+        insert.setString(1, uuid);
         insert.setString(2, email);
         insert.execute();
         System.out.println("Usuário uuid e email: " + email + " salvo com sucesso");
