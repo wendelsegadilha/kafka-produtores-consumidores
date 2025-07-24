@@ -13,6 +13,14 @@ public class Order {
         this.amount = amount;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
